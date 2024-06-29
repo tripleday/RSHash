@@ -1,0 +1,9 @@
+[submodule "module/xxhash"]
+	path = module/xxhash
+	url = https://github.com/Cyan4973/xxHash.git
+[submodule "module/malloc_count"]
+	path = module/malloc_count
+	url = https://github.com/bingmann/malloc_count.git
+[submodule "utils"]
+	path = utils
+	url = https://github.com/TooBiased/utils_tm.git

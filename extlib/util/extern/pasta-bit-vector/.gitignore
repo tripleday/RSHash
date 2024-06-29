@@ -1,0 +1,4 @@
+/build/**
+/build_with_debug_info/**
+/debug/**
+/docs/html**
