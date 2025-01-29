@@ -23,11 +23,11 @@ template <size_t retrievalCoeffBits = 64>
 class RSHash4s {
     public:
         size_t N;
-    private:
+    // private:
         size_t minLCP;
-        lemonhash::AlphabetMap<true> am;
-        // static const size_t num = 10;
-        // lemonhash::AlphabetMaps<true, num> am;
+        // lemonhash::AlphabetMap<true> am;
+        static const size_t num = 43;
+        lemonhash::AlphabetMaps<true, num> am;
         rs::RadixSpline<uint64_t> rs;
         MultiRetrievalDataStructure<retrievalCoeffBits> retrievalDataStructure;
         lemonhash::BucketOffsets bucketOffsets;
@@ -37,29 +37,34 @@ class RSHash4s {
                    + " retrievalCoeffBits=" + std::to_string(retrievalCoeffBits);
         }
 
-        explicit RSHash4s(const std::vector<std::string> &strings) { 
-            N = strings.size();
+        explicit RSHash4s(const std::vector<std::string> &strings)
+                : N(strings.size()) { 
             if (N == 0) return;
             auto lcps = lemonhash::computeLCPs(strings.begin(), strings.end());
             minLCP = (*std::min_element(lcps.begin()+1, lcps.end(),
                                 [](const lemonhash::LcpDetails& x, const lemonhash::LcpDetails& y) {  return x.lcp < y.lcp; })).lcp;
             std::cout << "\nminLCP " << minLCP << std::endl;   
-            lemonhash::AlphabetMap<true> tempa(lcps.begin(), lcps.size());
-            am.bitMap[0] = tempa.bitMap[0];
-            am.bitMap[1] = tempa.bitMap[1];
-            std::cout << "am.size() " << am.size() << std::endl;  
-            std::cout << "am.length64() " << am.length64() << std::endl;  
-            // lemonhash::AlphabetMaps<true, num> tempa(lcps.begin(), lcps.size(), minLCP); 
-            // for (int i = 0; i < num; ++i){
-            //     am.ams[i].bitMap[0] = tempa.ams[i].bitMap[0];
-            //     am.ams[i].bitMap[1] = tempa.ams[i].bitMap[1];
-            //     std::cout << "am.ams[i].size() " <<  am.ams[i].size() << std::endl; 
-            // }
-            // am.max_branching_num = tempa.max_branching_num;
-            // am.adjust_num = tempa.adjust_num;
-            // std::cout << "am.max_branching_num " << am.max_branching_num << std::endl;  
-            // std::cout << "am.adjust_num " << am.adjust_num << std::endl;  
+            // lemonhash::AlphabetMap<true> tempa(lcps.begin(), lcps.size());
+            // am.bitMap[0] = tempa.bitMap[0];
+            // am.bitMap[1] = tempa.bitMap[1];
+            // std::cout << "am.size() " << am.size() << std::endl;  
             // std::cout << "am.length64() " << am.length64() << std::endl;  
+            lemonhash::AlphabetMaps<true, num> tempa(lcps.begin(), lcps.size(), minLCP); 
+            for (int i = 0; i < num; ++i){
+                am.ams[i].bitMap[0] = tempa.ams[i].bitMap[0];
+                am.ams[i].bitMap[1] = tempa.ams[i].bitMap[1];
+                // std::cout << "am.ams[" << i << "].size() " <<  am.ams[i].size() << std::endl; 
+            }
+            am.max_branching_num = tempa.max_branching_num;
+            am.adjust_num = tempa.adjust_num;
+            am.j_list = tempa.j_list;
+            std::cout << "\nam.max_branching_num " << am.max_branching_num << std::endl;  
+            std::cout << "am.adjust_num " << am.adjust_num << std::endl;  
+            std::cout << "am.length64() " << am.length64() << std::endl;  
+            // for (int i = 0; i < am.j_list.size(); ++i) {
+            //     std::cout << am.j_list[i] << std::endl;
+            // }
+
             std::vector<uint64_t> data;
             // data.reserve(N);
             for (auto s : strings) {

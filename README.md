@@ -11,5 +11,6 @@ This is a Monotone Minimal Perfect Hash Function (MMPHF) based on the learned in
 
 ## Usage
 
-1. prepare.sh
-2. runExperiments.sh data/ build/integerDistributions
+1. bash prepare.sh
+2. bash runIntegers.sh data/ build/IntegerDistributions
+3. bash runStrings.sh data/ build/StringDistributions

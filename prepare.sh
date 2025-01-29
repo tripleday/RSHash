@@ -5,6 +5,6 @@ echo "Compiling benchmark..."
 
 mkdir -p build
 cd build
-make clean
 cmake -DCMAKE_BUILD_TYPE=Release ..
+make clean
 make -j 2 

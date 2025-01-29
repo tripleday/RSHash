@@ -8,6 +8,7 @@
 #include <numeric>
 #include "util.h"
 #include "AlphabetMap.h"
+#include <vector>
 
 namespace lemonhash {
 /** Stores a subset of the alphabet of 7-bit or 8-bit values (depending on whether ASCII is true). */
@@ -17,6 +18,7 @@ struct AlphabetMaps {
     lemonhash::AlphabetMap<ASCII> ams[num];
     size_t max_branching_num;
     int adjust_num=num;
+    std::vector<uint64_t> j_list;
 
     void set(size_t n, uint8_t c) {
         if constexpr (ASCII)
@@ -39,13 +41,17 @@ struct AlphabetMaps {
                 set(lcp.lcp-minLCP, lcp.branchingCharacter1);
             }
             max_branching_num = ams[0].size();
+            adjust_num = 1;  j_list.emplace_back(0);
             for (size_t i = 1; i < num; i++) {
                 if (ams[i].size() > max_branching_num)  max_branching_num = ams[i].size();
+                if (ams[i].size() > 0) {
+                    j_list.emplace_back(i);  adjust_num += 1;
+                }
             }
-            for (adjust_num = num-1; adjust_num >= 0; --adjust_num) {
-                if (ams[adjust_num].size()!=0)  break;
-            }
-            adjust_num += 1;
+            // for (adjust_num = num-1; adjust_num >= 0; --adjust_num) {
+            //     if (ams[adjust_num].size()!=0)  break;
+            // }
+            // adjust_num += 1;
         }
 
         /** Returns the rank of a given character in the alphabet if the character is present, otherwise returns 0. */
@@ -70,7 +76,7 @@ struct AlphabetMaps {
             uint64_t chunk = 0;
             size_t i = 0;
             for (; i < characters && i < stringLength; i++)
-                chunk = chunk * sigma + std::min<size_t>(rank(i,string[i]), sigma - 1);
+                chunk = chunk * sigma + std::min<size_t>(rank(j_list[i],string[j_list[i]]), sigma - 1);
             for (; i < characters; i++)
                 chunk *= sigma;
             return chunk;

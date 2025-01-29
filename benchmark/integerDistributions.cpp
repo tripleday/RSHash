@@ -7,7 +7,10 @@
 #include <RS.hpp>
 #include <RSHash.hpp>
 #include <stdmap.hpp>
+#include <robin.hpp>
+#include <btree.hpp>
 #include <stdumap.hpp>
+#include <PGM.hpp>
 #include <bucket_mapping/SuccinctPGMBucketMapper.hpp>
 #include <cstdint>
 #include "simpleMmphfBenchmark.hpp"
@@ -15,7 +18,49 @@
 #include "RSBenchmark.hpp"
 #include "RSHashBenchmark.hpp"
 #include "stdmapBenchmark.hpp"
+#include "robinBenchmark.hpp"
+#include "btreeBenchmark.hpp"
 #include "stdumapBenchmark.hpp"
+#include "pgmBenchmark.hpp"
+
+std::vector<uint64_t> loadEthInteger(std::string &filename, size_t maxN) {
+    std::ifstream fileIn(filename, std::ios::in | std::ios::binary);
+    if (!fileIn) throw std::system_error(errno, std::system_category(), "failed to open " + filename);
+
+    std::vector<uint64_t> inputData;
+    uint64_t number;
+    size_t size = 0;
+    while (fileIn >> number) {
+        inputData.push_back(number);
+        size += 1;
+        if (size >= maxN)  break;
+    }
+    fileIn.close();
+    std::cout<<"Loading ETH file of size "<<size<<std::endl;
+
+    // std::cout<<"Checking if input data is sorted"<<std::endl;
+    // for (size_t i = 1; i < inputData.size(); i++) {
+    //     if (inputData.at(i) < inputData.at(i - 1)) {
+    //         throw std::runtime_error("Not sorted or duplicate key");
+    //     }
+    // }
+    std::cout<<"Sorting and deduplicating"<<std::endl;
+    std::sort(inputData.begin(), inputData.end());
+    auto last = std::unique(inputData.begin(), inputData.end());
+    inputData.erase(last, inputData.end());
+    std::cout<<"Loaded "<<inputData.size()<<" integers"<<std::endl;
+    // if (inputData.size() >= 10) {
+    //     for (int i = 0; i < 10; ++i) {
+    //         std::cout << inputData[i] << ' ';
+    //     }
+    //     std::cout << std::endl;
+    // } else {
+    //     std::cout << "Fewer than 10 element in inputData." << std::endl;
+    // }
+    // std::vector<uint64_t> firstTenElements = {1, 4, 9, 16, 25, 36, 49, 64, 81, 100};
+    // return firstTenElements;
+    return inputData;
+}
 
 std::vector<uint64_t> loadInt64File(std::string &filename, size_t maxN) {
     std::ifstream fileIn(filename, std::ios::in | std::ios::binary);
@@ -164,11 +209,14 @@ int main(int argc, char** argv) {
     bool RS = false;
     bool RSHash = false;
     bool stdmap = false;
+    bool robin = false;
+    bool btree = false;
     bool stdumap = false;
+    bool pgm = false;
 
     tlx::CmdlineParser cmd;
     cmd.add_bytes('n', "num_keys", N, "Number of keys to generate");
-    cmd.add_string('t', "type", type, "Type of data to generate (uniform, pareto, exponential, int32, int64)");
+    cmd.add_string('t', "type", type, "Type of data to generate (uniform, pareto, exponential, int32, int64, eth)");
     cmd.add_string('f', "filename", filename, "Input data set to load. First 64 bits must be length, then all following words are integers");
     cmd.add_bytes('q', "numQueries", numQueries, "Number of queries to measure");
     cmd.add_flag("linear", linear, "Run with linear bucket mapper");
@@ -179,8 +227,11 @@ int main(int argc, char** argv) {
     cmd.add_flag("BS", BS, "Run with binary search");
     cmd.add_flag("RS", RS, "Run with radix spline");
     cmd.add_flag("RSHash", RSHash, "Run with radix spline hash");
-    cmd.add_flag("stdmap", stdmap, "Run with radix std::map");
-    cmd.add_flag("stdumap", stdumap, "Run with radix std::unordered_map");
+    cmd.add_flag("stdmap", stdmap, "Run with std::map");
+    cmd.add_flag("robin", robin, "Run with robin_map");
+    cmd.add_flag("btree", btree, "Run with stx::btree");
+    cmd.add_flag("stdumap", stdumap, "Run with std::unordered_map");
+    cmd.add_flag("pgm", pgm, "Run with Piecewise Geometric Model index (PGM-index)");
     if (!cmd.process(argc, argv)) {
         return 1;
     }
@@ -195,6 +246,8 @@ int main(int argc, char** argv) {
             inputData = loadInt32File(filename, N);
         } else if (type == "int64") {
             inputData = loadInt64File(filename, N);
+        } else if (type == "eth") {
+            inputData = loadEthInteger(filename, N);
         } else {
             cmd.print_usage();
             return 1;
@@ -251,8 +304,17 @@ int main(int argc, char** argv) {
     if (stdmap) {
         stdmapBenchmark<stdmapMethods::stdmap>(inputData, datasetName, numQueries);
     }
+    if (robin) {
+        robinBenchmark<robinMethods::robin>(inputData, datasetName, numQueries);
+    }
+    if (btree) {
+        btreeBenchmark<btreeMethods::btree>(inputData, datasetName, numQueries);
+    }
     if (stdumap) {
         stdumapBenchmark<stdumapMethods::stdumap>(inputData, datasetName, numQueries);
+    }
+    if (pgm) {
+        pgmBenchmark<pgmMethods::PGM>(inputData, datasetName, numQueries);
     }
     return 0;
 }

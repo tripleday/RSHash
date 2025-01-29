@@ -28,6 +28,16 @@
 #define PGM_SUB_EPS(x, epsilon) ((x) <= (epsilon) ? 0 : ((x) - (epsilon)))
 #define PGM_ADD_EPS(x, epsilon, size) ((x) + (epsilon) + 2 >= (size) ? (size) : (x) + (epsilon) + 2)
 
+/**
+ * A struct that stores the result of a query to a @ref PGMIndex, that is, a range [@ref lo, @ref hi)
+ * centered around an approximate position @ref pos of the sought key.
+ */
+struct ApproxPos {
+    size_t pos; ///< The approximate position of the key.
+    size_t lo;  ///< The lower bound of the range.
+    size_t hi;  ///< The upper bound of the range.
+};
+
 namespace lemonhash::pgm {
 
 /**
@@ -134,6 +144,38 @@ public:
      */
     PGMIndex() = default;
 
+    /**
+     * Constructs the index on the given sorted vector.
+     * @param data the vector of keys to be indexed, must be sorted
+     */
+    explicit PGMIndex(const std::vector<K> &data) : PGMIndex(data.begin(), data.end()) {}
+
+    /**
+     * Constructs the index on the sorted keys in the range [first, last).
+     * @param first, last the range containing the sorted keys to be indexed
+     */
+    template<typename RandomIt>
+    PGMIndex(RandomIt first, RandomIt last)
+        : n(std::distance(first, last)),
+          first_key(n ? *first : K(0)),
+          segments(),
+          levels_offsets() {
+        build(first, last, epsilon, epsilon_recursive, segments, levels_offsets);
+    }
+
+    /**
+     * Returns the approximate position and the range where @p key can be found.
+     * @param key the value of the element to search for
+     * @return a struct with the approximate position and bounds of the range
+     */
+    ApproxPos search(const K &key) const {
+        auto k = std::max(first_key, key);
+        auto it = segment_for_key(k);
+        auto pos = std::min<size_t>((*it)(k), std::next(it)->intercept);
+        auto lo = PGM_SUB_EPS(pos, epsilon);
+        auto hi = PGM_ADD_EPS(pos, epsilon, n);
+        return {pos, lo, hi};
+    }
     /**
      * Constructs the index on the sorted keys in the range [first, last).
      * @param first, last the range containing the sorted keys to be indexed

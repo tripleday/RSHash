@@ -20,7 +20,7 @@ class RS {
         rs::RadixSpline<uint64_t> rs;
     public:
         static std::string name() {
-            return std::string("RS");
+            return std::string("RadixSpline");
         }
 
         explicit RS(const std::vector<uint64_t> &data)

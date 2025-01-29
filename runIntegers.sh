@@ -27,30 +27,57 @@ allMappers="--linear $mappersExceptLinear"
 
 
 
+########################
+# robin does not perform as good as ideal
+########################
+
+$pathToCppBinary --succinctPgmAutoTune --numQueries 10M --type eth --filename "$pathToDatasetsFolder/all_values.csv"
+$pathToCppBinary --BS --numQueries 10M --type eth --filename "$pathToDatasetsFolder/all_values.csv"
+$pathToCppBinary --RS --numQueries 10M --type eth --filename "$pathToDatasetsFolder/all_values.csv"
+$pathToCppBinary --RSHash --numQueries 10M --type eth --filename "$pathToDatasetsFolder/all_values.csv"
+$pathToCppBinary --stdmap --numQueries 10M --type eth --filename "$pathToDatasetsFolder/all_values.csv"
+$pathToCppBinary --stdumap --numQueries 10M --type eth --filename "$pathToDatasetsFolder/all_values.csv"
+$pathToCppBinary --pgm --numQueries 10M --type eth --filename "$pathToDatasetsFolder/all_values.csv"
+$pathToCppBinary --btree --numQueries 10M --type eth --filename "$pathToDatasetsFolder/all_values.csv"
+$pathToCppBinary --robin --numQueries 10M --type eth --filename "$pathToDatasetsFolder/all_values.csv"
+
 # $pathToCppBinary --succinctPgmAutoTune --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
 # $pathToCppBinary --BS --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
 # $pathToCppBinary --RS --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
-$pathToCppBinary --RSHash --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
+# $pathToCppBinary --RSHash --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
 # $pathToCppBinary --stdmap --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
 # $pathToCppBinary --stdumap --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
+# $pathToCppBinary --pgm --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
+# $pathToCppBinary --btree --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
+# $pathToCppBinary --robin --numQueries 10M --filename "$pathToDatasetsFolder/books_50M_uint64"
 
 # $pathToCppBinary --succinctPgmAutoTune --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
 # $pathToCppBinary --BS --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
 # $pathToCppBinary --RS --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
-$pathToCppBinary --RSHash --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
+# $pathToCppBinary --RSHash --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
 # $pathToCppBinary --stdmap --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
 # $pathToCppBinary --stdumap --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
+# $pathToCppBinary --pgm --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
+# $pathToCppBinary --btree --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
+# $pathToCppBinary --robin --numQueries 10M --filename "$pathToDatasetsFolder/fb_50M_uint64"
 
 # $pathToCppBinary --succinctPgmAutoTune --numQueries 10M --num_keys 10M --type uniform
 # $pathToCppBinary --BS --numQueries 10M --num_keys 10M --type uniform
 # $pathToCppBinary --RS --numQueries 10M --num_keys 10M --type uniform
-$pathToCppBinary --RSHash --numQueries 10M --num_keys 10M --type uniform
+# $pathToCppBinary --RSHash --numQueries 10M --num_keys 10M --type uniform
 # $pathToCppBinary --stdmap --numQueries 10M --num_keys 10M --type uniform
 # $pathToCppBinary --stdumap --numQueries 10M --num_keys 10M --type uniform
+# $pathToCppBinary --pgm --numQueries 10M --num_keys 10M --type uniform
+# $pathToCppBinary --btree --numQueries 10M --num_keys 10M --type uniform
+# $pathToCppBinary --robin --numQueries 10M --num_keys 10M --type uniform
 
 # $pathToCppBinary --succinctPgmAutoTune --numQueries 10M --num_keys 10M --type normal
 # $pathToCppBinary --BS --numQueries 10M --num_keys 10M --type normal
 # $pathToCppBinary --RS --numQueries 10M --num_keys 10M --type normal
-$pathToCppBinary --RSHash --numQueries 10M --num_keys 10M --type normal
+# $pathToCppBinary --RSHash --numQueries 10M --num_keys 10M --type normal
 # $pathToCppBinary --stdmap --numQueries 10M --num_keys 10M --type normal
 # $pathToCppBinary --stdumap --numQueries 10M --num_keys 10M --type normal
+# $pathToCppBinary --pgm --numQueries 10M --num_keys 10M --type normal
+# $pathToCppBinary --btree --numQueries 10M --num_keys 10M --type normal
+# $pathToCppBinary --robin --numQueries 10M --num_keys 10M --type normal
+

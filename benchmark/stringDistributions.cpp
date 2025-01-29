@@ -5,14 +5,18 @@
 #include <LeMonHashVLIndexed.hpp>
 #include "simpleMmphfBenchmark.hpp"
 #include <RSHash4s.hpp>
-#include <RS4s.hpp>
+#include <ART.hpp>
 #include <BS4s.hpp>
 #include <stdmap4s.hpp>
+#include <robin4s.hpp>
+#include <btree4s.hpp>
 #include <stdumap4s.hpp>
 #include "RSHashBenchmark.hpp"
-#include "RSBenchmark.hpp"
+#include "artBenchmark.hpp"
 #include "BSBenchmark.hpp"
 #include "stdmapBenchmark.hpp"
+#include "robinBenchmark.hpp"
+#include "btreeBenchmark.hpp"
 #include "stdumapBenchmark.hpp"
 
 std::string stringOfLength(size_t length, util::XorShift64 &prng) {
@@ -140,10 +144,25 @@ std::vector<std::string> loadFile(std::string &filename, size_t maxStrings) {
     }
     delete[] line;
     std::sort(inputData.begin(), inputData.end());
-    // for (std::string& str : inputData) {
-    //     std::cout << str << std::endl;
-    // }
     std::cout<<"Loaded "<<inputData.size()<<" strings"<<std::endl;
+
+    // if (inputData.size() >= 10) {
+    //     for (int i = 0; i < 10; ++i) {
+    //         std::cout << inputData[i] << std::endl;
+    //         std::cout << inputData[i].length() << std::endl;
+    //     }
+    //     std::cout << std::endl;
+    // } else {
+    //     std::cout << "Fewer than 10 element in inputData." << std::endl;
+    // }
+    // for (int i = 0; i < inputData.size(); ++i) {
+    //     if (inputData[i].length() != 43) {
+    //         std::cout << inputData[i] << std::endl;
+    //         std::cout << inputData[i].length() << std::endl;
+    //     }
+    // }
+    std::cout << std::endl;
+
     return inputData;
 }
 
@@ -159,9 +178,11 @@ int main(int argc, char** argv) {
     bool AN = false;
     bool Hex = false;
     bool RSHash4s = false;
-    bool RS4s = false;
+    bool ART = false;
     bool BS4s = false;
     bool stdmap4s = false;
+    bool robin4s = false;
+    bool btree4s = false;
     bool stdumap4s = false;
 
     tlx::CmdlineParser cmd;
@@ -176,9 +197,11 @@ int main(int argc, char** argv) {
     cmd.add_flag("fixedEpsilon", fixedEpsilon, "Also run variant with a fixed epsilon value");
     cmd.add_flag("differentThresholds", differentThresholds, "Also run variant with different thresholds");
     cmd.add_flag("RSHash4s", RSHash4s, "Run with RSHash4s");
-    cmd.add_flag("RS4s", RS4s, "Run with RS4s");
+    cmd.add_flag("ART", ART, "Run with ART");
     cmd.add_flag("BS4s", BS4s, "Run with BS4s");
     cmd.add_flag("stdmap4s", stdmap4s, "Run with stdmap4s");
+    cmd.add_flag("robin4s", robin4s, "Run with robin_map");
+    cmd.add_flag("btree4s", btree4s, "Run with btree4s");
     cmd.add_flag("stdumap4s", stdumap4s, "Run with stdumap4s");
     if (!cmd.process(argc, argv)) {
         return 1;
@@ -247,14 +270,20 @@ int main(int argc, char** argv) {
     if (RSHash4s) {
         RSHashBenchmark<rshash::RSHash4s<>>(inputData, baseFilename, numQueries);
     }
-    if (RS4s) {
-        RSBenchmark<radixSplineMethods::RS4s>(inputData, baseFilename, numQueries);
+    if (ART) {
+        artBenchmark<artMethods::ART>(inputData, baseFilename, numQueries);
     }
     if (BS4s) {
         BSBenchmark<binarySearchMethods::BS4s>(inputData, baseFilename, numQueries);
     }
     if (stdmap4s) {
         stdmapBenchmark<stdmapMethods::stdmap4s>(inputData, baseFilename, numQueries);
+    }
+    if (robin4s) {
+        robinBenchmark<robinMethods::robin4s>(inputData, baseFilename, numQueries);
+    }
+    if (btree4s) {
+        btreeBenchmark<btreeMethods::btree4s>(inputData, baseFilename, numQueries);
     }
     if (stdumap4s) {
         stdumapBenchmark<stdumapMethods::stdumap4s>(inputData, baseFilename, numQueries);

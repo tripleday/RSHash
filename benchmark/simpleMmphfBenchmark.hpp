@@ -50,8 +50,8 @@ void simpleMmphfBenchmark(std::vector<key_t> &inputData, std::string &dataset, s
               << " competitor=" << MMphf::name()
               << " N=" << N
               << " numQueries=" << numQueries
-              << " spacePerObject=" << spacePerElement
-              << " constructionMs=" << std::chrono::duration_cast<std::chrono::milliseconds>(endConstr - beginConstr).count()
+            //   << " spacePerObject=" << spacePerElement
+              << " constructionNs=" << std::chrono::duration_cast<std::chrono::nanoseconds>(endConstr - beginConstr).count()/N
               << " queryNs=" << std::chrono::duration_cast<std::chrono::nanoseconds>(endQuery - beginQuery).count()/numQueries
               << std::endl;
     // Note that this is a bit larger than what is calculated by the data structure itself.
